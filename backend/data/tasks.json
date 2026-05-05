@@ -1,0 +1,7 @@
+[
+  { "id": 1, "title": "Complete my homework", "completed": true },
+  { "id": 2, "title": "Sleep at 10:40 PM", "completed": true },
+  { "id": 3, "title": "Wake, make bed and go to school", "completed": true },
+  { "id": 4, "title": "Complete my homework", "completed": false },
+  { "id": 5, "title": "Return home", "completed": false }
+]

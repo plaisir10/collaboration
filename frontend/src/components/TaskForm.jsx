@@ -7,13 +7,14 @@ const TaskForm = ({ onAdd }) => {
         e.preventDefault()
         if (!title.trim()) return;
         onAdd(title)
+        setTitle("")
     }
     return (
         <>
             <h1 className='font-bold text-2xl'>Student Tasks Manager</h1>
                 <form onSubmit={handleSubmit} className='mt-4 w-200 min-w-sm flex justify-center gap-2'>
                     <input
-                        className='p-2 w-120 bg-white rounded shadow-sm focus:border-none focus:outline-none focus:ring-2 focus:ring-blue-200'
+                        className='p-2 px-3 w-120 bg-white rounded shadow-sm focus:border-none focus:outline-none focus:ring-2 focus:ring-blue-200'
                         type='text'
                         placeholder='Enter a task...'
                         value={title}
