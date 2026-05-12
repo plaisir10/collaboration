@@ -2,39 +2,37 @@ import { useEffect, useState } from 'react'
 import TaskForm from './components/TaskForm'
 import TaskItem from './components/TaskItem'
 import TaskList from './components/TaskList'
-import { v4 as uuidv4 } from "uuid";
-
-const initialTask = [
-  { id: uuidv4(), title: "Complete my homework", completed: true },
-  { id: uuidv4(), title: "Sleep at 10:40 PM", completed: true },
-  { id: uuidv4(), title: "Wake, make bed and go to school", completed: true },
-  { id: uuidv4(), title: "Complete my homework", completed: false },
-  { id: uuidv4(), title: "Return home", completed: false },
-]
+import { createTask, getTasks, deleteTask, toggleTask, updateTask } from './api'
 
 const App = () => {
-  const [tasks, setTasks] = useState(initialTask)
+  let [tasks, setTasks] = useState([])
   // State to track which task is being edited[cite: 4]
   const [editId, setEditId] = useState(null)
 
-  const addTask = (task) => {
-    const newTask = { id: Date.now(), title: task, completed: false }
+  useEffect(() => {
+    getTasks().then((tasks) => setTasks(tasks))
+  }, [])
+
+  const addTask = async (task) => {
+    const newTask = await createTask(task)
     setTasks([...tasks, newTask])
   }
 
-  const handleToggle = (id) => {
+  const handleToggle = async (id) => {
+    await toggleTask(id)
     setTasks(tasks.map((task) => task.id === id ? { ...task, completed: !task.completed } : task))
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
+    await deleteTask(id)
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
   // Function to save the edited task[cite: 4]
-  const handleUpdate = (id, newTitle) => {
-    // if(!task.trim()) return handleDelete(id)
+  const handleUpdate = async (id, newTitle) => {
+    const updated = await updateTask(id, newTitle)
     setTasks(tasks.map(task =>
-      task.id === id ? { ...task, title: newTitle } : task
+      task.id === id ? { ...task, title: updated.title } : task
     ))
     setEditId(null)
   }

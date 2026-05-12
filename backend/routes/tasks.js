@@ -4,7 +4,6 @@ import fs, { read, readSync } from "fs";
 import path from "path";
 import { title } from "process";
 import { fileURLToPath } from "url";
-import { v4 as uuidv4 } from "uuid";
 
 const router = express.Router();
 
@@ -31,11 +30,11 @@ router.post("/", (req, res) => {
   const { title } = req.body;
 
   if (!title || !title.trim()) {
-    res.status(400, { message: "Title is required" });
+    return res.status(400).json({ message: "Title is required" });
   }
   const newTask = {
-    id: uuidv4(),
-    title: title.trim(),
+    id: Date.now(),
+    title: title,
     completed: false,
     createdAt: new Date().toISOString(),
   };
@@ -44,7 +43,7 @@ router.post("/", (req, res) => {
   tasks.push(newTask);
 
   writeTasks(tasks);
-  res.status(201).send({ message: "Task created successfully!" });
+  res.status(201).send(newTask);
 });
 
 router.delete("/:id", (req, res) => {
@@ -57,7 +56,7 @@ router.delete("/:id", (req, res) => {
   }
   tasks.splice(index, 1);
   writeTasks(tasks);
-  res.status(204).send();
+  res.status(204).json(index);
 });
 
 // ontoggle
@@ -66,7 +65,7 @@ router.patch("/:id", (req, res) => {
   const tasks = readTasks();
   const task = tasks.find((task) => task.id == id);
   if (!task) {
-    res.status(404).json({ message: "Task Not Found!" });
+    return res.status(404).json({ message: "Task Not Found!" });
   }
   task.completed = !task.completed;
   writeTasks(tasks);
@@ -76,17 +75,17 @@ router.patch("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
   const id = req.params.id;
   const { title } = req.body;
+  if (!title) {
+    return res.status(400).json({ message: "Title is required!" });
+  }
   const tasks = readTasks();
-  const updatedTask = {
-    id: uuidv4(),
-    title: title.trim(),
-    completed: false,
-    createdAt: new Date().toISOString(),
-  };
   const task = tasks.find((task) => task.id == id);
-  tasks.splice(task, 1, updatedTask);
+  if (!task) {
+    return res.status(404).json({ message: "Task Not Found!" });
+  }
+  task.title = title;
   writeTasks(tasks);
-  res.status(200).json({ message: "Update successfully!", task: updatedTask });
+  res.status(200).json(task);
 });
 
 export default router;
